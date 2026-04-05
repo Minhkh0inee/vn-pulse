@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VN Pulse
+
+A monthly composite index tracking the health of Vietnam's startup ecosystem. Scores are derived from four weighted signals: funding activity, job postings, news volume, and community polls.
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router) + React 19
+- **Database**: PostgreSQL via Prisma v6
+- **Cache / Rate limiting**: Upstash Redis
+- **Auth**: NextAuth v4 (Google OAuth, admin-allowlist)
+- **UI**: shadcn/ui + Tailwind CSS v4 + Recharts + Motion
+- **Forms / Validation**: next-safe-action v8 + Zod v4
+- **Monitoring**: Sentry (@sentry/nextjs)
+- **Testing**: Vitest
+- **Deployment**: Vercel (with daily cron job)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 20+
+- PostgreSQL database
+- Upstash Redis instance
+
+### Environment variables
+
+Create a `.env` file at the project root:
+
+```env
+DATABASE_URL=
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+NEXTAUTH_SECRET=
+ADMIN_EMAILS=           # comma-separated list of allowed admin emails
+CRON_SECRET=            # Bearer token for /api/cron authorization
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Install & run
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npx prisma migrate dev  # apply migrations
+npm run seed            # seed Oct 2025 – Mar 2026 data
+npm run dev             # http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | TypeScript check (no emit) |
+| `npm run seed` | Seed database |
+| `npx vitest` | Run tests in watch mode |
+| `npx vitest run` | Run tests once |
+| `npx prisma studio` | Browse database |
 
-To learn more about Next.js, take a look at the following resources:
+## Architecture
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+app/
+├── (public)/       # Public-facing pages
+├── (admin)/        # Admin dashboard (auth required)
+├── (auth)/login/   # Google OAuth login
+└── api/
+    ├── auth/       # NextAuth handler
+    └── cron/       # Daily cron job (secured via CRON_SECRET)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+lib/                # prisma client, redis, rate-limiter
+components/ui/      # shadcn/ui primitives
+prisma/
+├── schema.prisma   # DB schema
+├── seed.ts         # Seed data (Oct 2025 – Mar 2026)
+└── migrations/
+```
 
-## Deploy on Vercel
+### Index scoring formula
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+totalScore = fundingScore × 0.30
+           + jobPostingScore × 0.25
+           + newsVolumeScore × 0.25
+           + pollScore × 0.20
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Sectors tracked: `fintech`, `ecommerce`, `edtech`, `healthtech`, `deeptech`
+
+## Cron Job
+
+Configured in `vercel.json` to run daily at `00:00 UTC` via `/api/cron`. Requires `Authorization: Bearer <CRON_SECRET>` header.
