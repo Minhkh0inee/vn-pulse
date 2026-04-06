@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Providers } from "./providers";
+import { Providers } from "./providers"
+import { Toaster } from "@/components/ui/sonner";
 import { Inter, JetBrains_Mono } from "next/font/google"
 
 const interSans = Inter({
@@ -28,9 +28,11 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${interSans.variable} ${jetBrainsMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
+        <Toaster />
       </body>
     </html>
   );

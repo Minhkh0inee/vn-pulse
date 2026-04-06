@@ -25,7 +25,6 @@ export function InsightCardsSkeleton() {
   )
 }
 
-// Component chính
 export function InsightCards({ insights }: { insights: Insight[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
