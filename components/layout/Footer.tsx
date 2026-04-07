@@ -1,15 +1,28 @@
+import Link from 'next/link'
+import { BarChart2 } from 'lucide-react'
+
 export default function Footer() {
+  const year = new Date().getFullYear()
+
   return (
-    <footer className="border border-dashed border-white/20 bg-[#0A0E1A] px-4 md:px-6 py-4 flex flex-col items-center gap-3">
+    <footer className="border-t border-[var(--border)] bg-[var(--card)] mt-12">
+      <div className="mx-auto max-w-5xl px-4 md:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
 
-      <div className="border border-dashed border-white/20 p-3 text-white/40 text-xs text-center min-h-[40px] flex items-center justify-center w-full md:max-w-md">
-        COPYRIGHT TEXT
+        {/* Brand */}
+        <div className="flex items-center gap-2 text-[var(--muted-foreground)]">
+          <span className="flex size-6 items-center justify-center rounded-md bg-[var(--primary)] text-white">
+            <BarChart2 className="size-3.5" />
+          </span>
+          <span className="text-sm">VN Pulse © {year}</span>
+        </div>
+
+        {/* Links */}
+        <nav className="flex items-center gap-4 text-xs text-[var(--muted-foreground)]">
+          <Link href="/"        className="hover:text-[var(--foreground)] transition-colors">Home</Link>
+          <Link href="/archive" className="hover:text-[var(--foreground)] transition-colors">Archive</Link>
+        </nav>
+
       </div>
-
-      <div className="border border-dashed border-white/20 p-3 text-white/40 text-xs text-center min-h-[40px] flex items-center justify-center w-full md:max-w-md">
-        LINKS ROW
-      </div>
-
     </footer>
   )
 }

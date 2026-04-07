@@ -33,9 +33,6 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Providers>
-          <header className="flex justify-end px-4 py-2">
-            <ThemeToggle />
-          </header>
           {children}
         </Providers>
         <Toaster />

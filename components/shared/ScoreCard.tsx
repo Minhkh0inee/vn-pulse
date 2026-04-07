@@ -17,7 +17,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 sm:p-8 w-full max-w-sm mx-auto">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 sm:p-8 w-full">
         <Skeleton className="h-4 w-28 mb-6" />
         <Skeleton className="h-20 w-32 mb-4" />
         <Skeleton className="h-5 w-20 mb-4 rounded-full" />
@@ -34,7 +34,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
   const labelColor = getLabelColor(score)
 
   return (
-    <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 sm:p-8 w-full max-w-sm mx-auto shadow-sm">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 sm:p-8 w-full h-full shadow-sm">
       {/* Month label */}
       <p className="text-xs font-medium uppercase tracking-widest text-[var(--muted-foreground)] mb-4">
         {month}

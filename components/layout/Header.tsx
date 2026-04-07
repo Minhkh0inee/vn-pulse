@@ -1,22 +1,39 @@
+import Link from 'next/link'
+import { BarChart2 } from 'lucide-react'
+import { ThemeToggle } from '../ThemeToggle'
+
 export default function Header() {
   return (
-    <header className="border border-dashed border-white/20 bg-[#0A0E1A] px-4 md:px-6">
+    <header className="sticky top-0 z-20 w-full border-b border-[var(--border)] bg-[var(--card)]/80 backdrop-blur-md">
+      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4 md:px-6">
 
-      {/* Mobile: stacked, Desktop: single row */}
-      <div className="flex flex-col sm:flex-row items-center gap-3 py-3 min-h-[60px]">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <span className="flex size-7 items-center justify-center rounded-md bg-[var(--primary)] text-white">
+            <BarChart2 className="size-4" />
+          </span>
+          <span className="text-sm font-semibold text-[var(--foreground)] hidden sm:block">
+            VN Pulse
+          </span>
+        </Link>
 
-        <div className="border border-dashed border-white/20 p-3 text-white/40 text-xs text-center min-h-[40px] flex items-center justify-center w-full sm:w-auto sm:flex-1">
-          LOGO + APP NAME
-        </div>
-
-        <div className="border border-dashed border-white/20 p-3 text-white/40 text-xs text-center min-h-[40px] flex items-center justify-center w-full sm:w-auto sm:flex-1">
-          NAV — Home · Archive
-        </div>
-
-        <div className="border border-dashed border-white/20 p-3 text-white/40 text-xs text-center min-h-[40px] flex items-center justify-center w-full sm:w-auto sm:flex-1">
-          AUTH STATUS
-        </div>
-
+        {/* Nav */}
+        <nav className="flex items-center gap-1 text-sm text-[var(--muted-foreground)]">
+          <Link
+            href="/"
+            className="rounded-md px-3 py-1.5 font-medium text-[var(--foreground)] bg-[var(--accent)] transition-colors hover:text-[var(--foreground)]"
+          >
+            Home
+          </Link>
+          <Link
+            href="/archive"
+            className="rounded-md px-3 py-1.5 transition-colors hover:text-[var(--foreground)] hover:bg-[var(--accent)]"
+          >
+            Archive
+          </Link>
+          <ThemeToggle />
+        </nav>
+    
       </div>
     </header>
   )
