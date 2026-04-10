@@ -1,9 +1,7 @@
-import React from 'react'
-
-const AdminLayout = () => {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div>AdminLayout</div>
+    <div className="min-h-screen bg-[#0A0E1A]">
+      {children}
+    </div>
   )
 }
-
-export default AdminLayout
