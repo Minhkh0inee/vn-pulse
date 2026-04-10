@@ -1,25 +1,61 @@
-const S = ({ label, className = "" }: { label: string; className?: string }) => (
-  <div className={`border border-dashed border-white/20 p-4 text-white/40 text-xs text-center min-h-[60px] flex items-center justify-center ${className}`}>
-    {label}
-  </div>
-)
+import { getAllIndexes } from '@/lib/fetchers'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
+import Link from 'next/link'
+import { CalendarX2 } from 'lucide-react'
+import YearFilter from '@/components/shared/YearFilter'
 
-export default function ArchivePage() {
+export const revalidate = 3600
+
+export default async function ArchivePage() {
+  const allIndexes = await getAllIndexes()
+
+  const years = [...new Set(allIndexes.map(idx => idx.year))].sort((a, b) => b - a)
+
   return (
-    <div className="bg-[#0A0E1A] flex flex-col gap-4 p-4 md:p-6">
+    <div className="mx-auto max-w-5xl px-4 md:px-6 py-8 space-y-8">
+
+      {/* Breadcrumb */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="/">Trang chủ</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Lịch sử</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       {/* Page header */}
-      <S label="PAGE HEADER — Title + Description" className="min-h-[80px]" />
-
-      {/* Filter bar */}
-      <S label="FILTER BAR — Year filter" />
-
-      {/* Archive grid — 1 col → 2 col → 3 col */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <S key={i} label={`ARCHIVE CARD ${i + 1}`} className="min-h-[100px]" />
-        ))}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--foreground)]">
+          Lịch sử chỉ số
+        </h1>
+        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+          Toàn bộ dữ liệu chỉ số hệ sinh thái khởi nghiệp Việt Nam theo từng tháng
+        </p>
       </div>
+
+      {/* Content */}
+      {allIndexes.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 gap-3 text-center text-[var(--muted-foreground)]">
+          <CalendarX2 className="size-10 opacity-40" />
+          <p className="text-base font-medium">Chưa có dữ liệu</p>
+          <p className="text-sm">Dữ liệu tháng đầu tiên sẽ xuất hiện tại đây sau khi được công bố.</p>
+        </div>
+      ) : (
+        <YearFilter indexes={allIndexes} years={years} />
+      )}
 
     </div>
   )

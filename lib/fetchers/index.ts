@@ -63,6 +63,21 @@ export async function getAllIndexes() {
   return data
 }
 
+export async function getLast6MonthsUpTo(month: string) {
+  const cacheKey = `index:last-6-upto:${month}`
+  const cached = await redis.get<IMonthlyIndex[]>(cacheKey)
+  if (cached) return cached
+
+  const data = await prisma.monthlyIndex.findMany({
+    where:   { isPublished: true, month: { lte: month } },
+    orderBy: { month: "desc" },
+    take:    6,
+  })
+
+  if (data) await redis.set(cacheKey, data, { ex: 86400 })
+  return data
+}
+
 export async function getIndexByMonth(month: string) {
   const cacheKey = `index:${month}`
   const cached = await redis.get<IMonthlyIndex>(cacheKey)
