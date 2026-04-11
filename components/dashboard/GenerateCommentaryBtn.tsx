@@ -8,9 +8,10 @@ import { ICommentaryInput } from "@/types/commentary"
 interface Props {
   input: ICommentaryInput
   onGenerated: (text: string) => void
+  disabled?: boolean
 }
 
-const GenerateCommentaryBtn = ({ input, onGenerated }: Props) => {
+const GenerateCommentaryBtn = ({ input, onGenerated, disabled }: Props) => {
   const [loading, setLoading] = useState(false)
 
   const handleGenerate = async () => {
@@ -48,7 +49,7 @@ const GenerateCommentaryBtn = ({ input, onGenerated }: Props) => {
   }
 
   return (
-    <Button onClick={handleGenerate} disabled={loading}>
+    <Button onClick={handleGenerate} disabled={loading || disabled} size="sm" variant="outline">
       {loading ? "Đang tạo..." : "Generate with AI"}
     </Button>
   )
