@@ -184,6 +184,13 @@ export default function AdminPage() {
         month={form.month}
         weightsValid={weightsValid}
         canPublish={canPublish}
+        form={form}
+        sectorScores={sectorScores}
+        onPublishSuccess={() => {
+          getExistingMonths().then(setExistingMonths)
+          setForm(DEFAULT_FORM)
+          setSectorScores(SECTORS.map((s) => ({ sector: s, score: "", trend: "" })))
+        }}
       />
 
     </div>
