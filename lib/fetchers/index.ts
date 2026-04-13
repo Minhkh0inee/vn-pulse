@@ -78,6 +78,15 @@ export async function getLast6MonthsUpTo(month: string) {
   return data
 }
 
+export async function getPollByMonth(month: string) {
+  console.log(month)
+  const data = await prisma.poll.findUnique({
+    where: { month },
+    select: { id: true, month: true, question: true, isOpen: true },
+  })
+  return data
+}
+
 export async function getIndexByMonth(month: string) {
   const cacheKey = `index:${month}`
   const cached = await redis.get<IMonthlyIndex>(cacheKey)

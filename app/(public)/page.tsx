@@ -1,10 +1,11 @@
 import ScoreCard from '@/components/shared/ScoreCard'
+import { PollWidget } from '@/components/dashboard/PollWidget'
 import CommentaryComponent from '@/components/shared/CommentaryComponent/CommentaryComponent'
 import StatsCard from '@/components/shared/StatsCard'
 import InsightCard from '@/components/shared/InsightCard'
 import TrendChart, { TrendDataPoint } from '@/components/shared/TrendCard/TrendChart'
 import ComponentBreakdown, { ComponentBreakdownData } from '@/components/shared/ComponentBreakdown/ComponentBreakdown'
-import { getLast6Months, getLatestTwoIndexes } from '@/lib/fetchers'
+import { getLast6Months, getLatestTwoIndexes, getPollByMonth } from '@/lib/fetchers'
 import { Banknote, Briefcase } from 'lucide-react'
 
 export const revalidate = 3600
@@ -36,6 +37,8 @@ export default async function HomePage() {
     )
   }
 
+  const poll = await getPollByMonth(latest.month)
+  console.log(poll)
   const trendData: TrendDataPoint[] = [...last6Raw].reverse().map((idx, _, arr) => ({
     month:     formatMonthShort(idx.month),
     score:     idx.totalScore,
@@ -139,9 +142,11 @@ export default async function HomePage() {
 
       {/* ── POLL SECTION ── */}
       <section className="flex justify-center">
-        <div className="w-full md:max-w-xl rounded-xl border border-dashed border-[var(--border)] bg-[var(--card)] p-6 text-center text-sm text-[var(--muted-foreground)]">
-          PollWidget — "Bạn đánh giá tháng này?"
-        </div>
+        <PollWidget
+          month={monthLabel}
+          rawMonth={latest.month}
+          question={poll?.question}
+        />
       </section>
 
     </div>
