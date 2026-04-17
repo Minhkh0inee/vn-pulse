@@ -19,3 +19,16 @@ export interface IPollResponse {
   userAgent: string | null;
   createdAt: Date;
 }
+
+export interface PollResult {
+  month:        string
+  question:     string
+  isOpen:       boolean
+  totalVotes:   number
+  avgRating:    number
+  distribution: {
+    rating:   number
+    count:    number
+    percent:  number
+  }[]
+}

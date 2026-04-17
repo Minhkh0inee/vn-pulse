@@ -38,7 +38,6 @@ export default async function HomePage() {
   }
 
   const poll = await getPollByMonth(latest.month)
-  console.log(poll)
   const trendData: TrendDataPoint[] = [...last6Raw].reverse().map((idx, _, arr) => ({
     month:     formatMonthShort(idx.month),
     score:     idx.totalScore,

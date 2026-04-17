@@ -79,10 +79,9 @@ export async function getLast6MonthsUpTo(month: string) {
 }
 
 export async function getPollByMonth(month: string) {
-  console.log(month)
   const data = await prisma.poll.findUnique({
     where: { month },
-    select: { id: true, month: true, question: true, isOpen: true },
+    // select: { id: true, month: true, question: true, isOpen: true },
   })
   return data
 }
