@@ -6,6 +6,7 @@ import InsightCard from '@/components/shared/InsightCard'
 import TrendChart, { TrendDataPoint } from '@/components/shared/TrendCard/TrendChart'
 import ComponentBreakdown, { ComponentBreakdownData } from '@/components/shared/ComponentBreakdown/ComponentBreakdown'
 import { getLast6Months, getLatestTwoIndexes, getPollByMonth } from '@/lib/fetchers'
+import { SubscribeWidget } from '@/components/shared/SubscribeWidget'
 import { Banknote, Briefcase } from 'lucide-react'
 
 export const revalidate = 3600
@@ -146,6 +147,11 @@ export default async function HomePage() {
           rawMonth={latest.month}
           question={poll?.question}
         />
+      </section>
+
+      {/* ── SUBSCRIBE SECTION ── */}
+      <section className="flex justify-center">
+        <SubscribeWidget />
       </section>
 
     </div>
