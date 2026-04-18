@@ -43,6 +43,16 @@ export default function Header() {
           >
             Archive
           </Link>
+          <Link
+            href="/compare"
+            className={`rounded-md px-3 py-1.5 font-medium transition-colors hover:text-[var(--foreground)] hover:bg-[var(--accent)] ${
+              pathname.startsWith('/compare')
+                ? 'text-[var(--foreground)] bg-[var(--accent)]'
+                : 'text-[var(--muted-foreground)]'
+            }`}
+          >
+            Compare
+          </Link>
           <ThemeToggle />
         </nav>
     

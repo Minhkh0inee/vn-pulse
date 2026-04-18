@@ -101,6 +101,20 @@ export async function getPollByMonth(month: string) {
   return data
 }
 
+export async function getIndexesByMonths(monthA: string, monthB: string) {
+  const cacheKey = `index:compare:${[monthA, monthB].sort().join(':')}`;
+  const cached = await redis.get<IMonthlyIndex[]>(cacheKey);
+  if (cached) return cached;
+
+  const data = await prisma.monthlyIndex.findMany({
+    where:   { month: { in: [monthA, monthB] }, isPublished: true },
+    include: { sectorScores: true },
+  });
+
+  if (data.length) await redis.set(cacheKey, data, { ex: 3600 });
+  return data as IMonthlyIndex[];
+}
+
 export async function getIndexByMonth(month: string) {
   const cacheKey = `index:${month}`
   const cached = await redis.get<IMonthlyIndex>(cacheKey)
