@@ -7,8 +7,6 @@ const resend = new Resend(process.env.NEXT_RESEND_API_KEY)
 const from = process.env.NEXT_MAIL_FROM
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vn-pulse.com'
 const BATCH_SIZE = 50
-console.log("resend:", resend)
-console.log("process.env.RESEND_API_KEY:", process.env.RESEND_API_KEY)
 
 function formatMonthLabel(month: string): string {
   const [year, mon] = month.split('-')
@@ -66,11 +64,9 @@ export async function POST(request: Request) {
           siteUrl: SITE_URL,
         }),
       }))
-      console.log("email:" , emails)
       await resend.batch.send(emails)
       totalSent += batch.length
     }
-    console.log("Email Sent")
     return Response.json({ sent: totalSent })
   } catch (error) {
     return Response.json({ error: String(error) }, { status: 500 })
