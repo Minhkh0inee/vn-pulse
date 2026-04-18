@@ -9,9 +9,6 @@ const initialState: SubscribeState = {};
 
 export function SubscribeWidget() {
   const [state, action, isPending] = useActionState(subscribeAction, initialState);
-  console.log("state: ", state)
-  console.log("action: ", action)
-  console.log("isPending: ", isPending)
 
   if (state.success) {
     return (

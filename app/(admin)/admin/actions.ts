@@ -5,6 +5,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { redis } from "@/lib/redis";
 import type { FormState, SectorRow } from "@/components/admin/types";
+import { sendNewsletter } from "@/app/actions/newsletter";
+import type { IMonthlyIndex } from "@/app/types/monthlyIndex";
 
 export async function getExistingMonths(): Promise<string[]> {
   const records = await prisma.monthlyIndex.findMany({
@@ -107,6 +109,15 @@ export async function publishIndex(
     });
 
     await redis.del("index:all", "index:latest");
+
+    const publishedIndex = await prisma.monthlyIndex.findFirst({
+      where: { month: form.month.trim() },
+      include: { sectorScores: true },
+    });
+   
+    if (publishedIndex) {
+      await sendNewsletter(publishedIndex as IMonthlyIndex);
+    }
 
     return { success: true };
   } catch (error) {

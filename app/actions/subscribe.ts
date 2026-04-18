@@ -20,7 +20,6 @@ export async function subscribeAction(
   formData: FormData,
 ): Promise<SubscribeState> {
   const parsed = schema.safeParse({ email: formData.get("email") });
-  console.log("parsed: ", parsed) 
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   const { email } = parsed.data;
