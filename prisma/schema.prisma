@@ -63,6 +63,8 @@ model SectorScore {
   sector      String   // "fintech" | "ecommerce" | "edtech" | "healthtech" | "deeptech"
   score       Float
   trend       Float?   // delta vs previous month
+  summaryVi   String?
+  summaryEn   String?
 
   createdAt   DateTime @default(now())
 

@@ -49,14 +49,14 @@ export default function AdminPage() {
   }, [])
   const [editingWeights, setEditingWeights] = useState(false)
   const [sectorScores, setSectorScores] = useState<SectorRow[]>(
-    SECTORS.map((s) => ({ sector: s, score: "", trend: "" }))
+    SECTORS.map((s) => ({ sector: s, score: "", trend: "", summaryVi: "", summaryEn: "" }))
   )
 
   function setField(key: keyof FormState, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }))
   }
 
-  function setSectorField(sector: Sector, key: "score" | "trend", value: string) {
+  function setSectorField(sector: Sector, key: keyof Omit<SectorRow, "sector">, value: string) {
     setSectorScores((prev) =>
       prev.map((row) => (row.sector === sector ? { ...row, [key]: value } : row))
     )
@@ -156,6 +156,9 @@ export default function AdminPage() {
 
           <SectorScoresSection
             sectorScores={sectorScores}
+            canGenerate={canGenerate}
+            month={form.month}
+            totalScore={totalScore}
             onChange={setSectorField}
           />
 
@@ -189,7 +192,7 @@ export default function AdminPage() {
         onPublishSuccess={() => {
           getExistingMonths().then(setExistingMonths)
           setForm(DEFAULT_FORM)
-          setSectorScores(SECTORS.map((s) => ({ sector: s, score: "", trend: "" })))
+          setSectorScores(SECTORS.map((s) => ({ sector: s, score: "", trend: "", summaryVi: "", summaryEn: "" })))
         }}
       />
 

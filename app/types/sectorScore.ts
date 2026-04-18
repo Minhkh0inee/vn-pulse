@@ -9,5 +9,7 @@ export interface ISectorScore {
   sector: Sector;
   score: number;
   trend: number | null;
+  summaryVi?: string | null;
+  summaryEn?: string | null;
   createdAt: Date;
 }

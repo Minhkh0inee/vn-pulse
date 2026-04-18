@@ -4,6 +4,8 @@ export interface SectorRow {
   sector: Sector
   score: string
   trend: string
+  summaryVi: string
+  summaryEn: string
 }
 
 export interface FormState {

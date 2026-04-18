@@ -7,6 +7,7 @@ import TrendChart, { TrendDataPoint } from '@/components/shared/TrendCard/TrendC
 import ComponentBreakdown, { ComponentBreakdownData } from '@/components/shared/ComponentBreakdown/ComponentBreakdown'
 import { getLast6Months, getLatestTwoIndexes, getPollByMonth } from '@/lib/fetchers'
 import { SubscribeWidget } from '@/components/shared/SubscribeWidget'
+import { SectorIndex } from '@/components/shared/SectorIndex'
 import { Banknote, Briefcase } from 'lucide-react'
 
 export const revalidate = 3600
@@ -120,6 +121,13 @@ export default async function HomePage() {
           publishedAt={latest.publishedAt}
         />
       </section>
+
+      {/* ── SECTOR INDEX ── */}
+      {latest.sectorScores && latest.sectorScores.length > 0 && (
+        <section>
+          <SectorIndex sectorScores={latest.sectorScores as import("@/app/types/sectorScore").ISectorScore[]} />
+        </section>
+      )}
 
       {/* ── AI INSIGHT SECTION ── */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">

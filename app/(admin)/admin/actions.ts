@@ -93,6 +93,8 @@ export async function publishIndex(
                 sector: s.sector,
                 score: parseFloat(s.score) || 0,
                 trend: s.trend !== "" ? parseFloat(s.trend) : null,
+                summaryVi: s.summaryVi || null,
+                summaryEn: s.summaryEn || null,
               })),
           },
         },
@@ -108,7 +110,13 @@ export async function publishIndex(
       });
     });
 
-    await redis.del("index:all", "index:latest");
+    await redis.del(
+      "index:all",
+      "index:latest",
+      "index:latest-two",
+      `index:${form.month.trim()}`,
+      `sectors:${form.month.trim()}`,
+    );
 
     const publishedIndex = await prisma.monthlyIndex.findFirst({
       where: { month: form.month.trim() },

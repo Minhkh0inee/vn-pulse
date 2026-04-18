@@ -16,6 +16,8 @@ import {
 import Link from 'next/link'
 import { Banknote, Briefcase } from 'lucide-react'
 import { notFound } from 'next/navigation'
+import { SectorIndex } from '@/components/shared/SectorIndex'
+import { ISectorScore } from '@/app/types/sectorScore'
 
 export const revalidate = 86400
 
@@ -168,6 +170,13 @@ export default async function ArchiveDetailPage({
           publishedAt={index.publishedAt}
         />
       </section>
+
+      {/* ── SECTOR INDEX ── */}
+      {index.sectorScores && index.sectorScores.length > 0 && (
+        <section>
+          <SectorIndex sectorScores={index.sectorScores as ISectorScore[]} />
+        </section>
+      )}
 
     </div>
   )

@@ -121,6 +121,57 @@ Phong cách:
 - Chỉ trả về đoạn văn thuần túy`
 }
 
+export interface SectorSummaryInput {
+  sector: string
+  score: number
+  trend: number | null
+  month: string
+  totalScore: number
+}
+
+export interface SectorSummaryOutput {
+  summaryVi: string
+  summaryEn: string
+}
+
+const SECTOR_DISPLAY: Record<string, string> = {
+  fintech: "Fintech",
+  ecommerce: "E-commerce",
+  edtech: "EdTech",
+  healthtech: "HealthTech",
+  deeptech: "DeepTech",
+}
+
+export async function generateSectorSummary(input: SectorSummaryInput): Promise<SectorSummaryOutput> {
+  const { sector, score, trend, month, totalScore } = input
+  const sectorLabel = SECTOR_DISPLAY[sector] ?? sector
+  const trendText = trend === null
+    ? "không có dữ liệu tháng trước"
+    : trend > 0 ? `tăng ${trend.toFixed(1)} điểm` : trend < 0 ? `giảm ${Math.abs(trend).toFixed(1)} điểm` : "không đổi"
+
+  const result = await generateText({
+    model: geminiFlash,
+    output: Output.object({
+      schema: z.object({
+        summaryVi: z.string().describe("1-2 câu tiếng Việt, dưới 40 từ, mô tả hiệu suất ngành"),
+        summaryEn: z.string().describe("1-2 sentences in English, under 40 words, describing sector performance"),
+      }),
+    }),
+    prompt: `You are an analyst for VN Startup Pulse, a Vietnamese startup ecosystem tracker.
+
+Sector: ${sectorLabel}
+Month: ${month}
+Sector score: ${score}/100 (${trendText} so với tháng trước)
+Overall index: ${totalScore}/100
+
+Write a brief AI summary for this sector in BOTH Vietnamese (summaryVi) and English (summaryEn).
+Each summary must be 1-2 sentences, under 40 words, professional tone.
+No markdown. Plain text only.`,
+  })
+
+  return result.output as SectorSummaryOutput
+}
+
 export function commentaryGenerate(input:ICommentaryInput) {
       const result = streamText({
         model: geminiFlash,

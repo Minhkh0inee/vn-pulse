@@ -1,4 +1,5 @@
 import { IMonthlyIndex } from "@/app/types/monthlyIndex"
+import { ISectorScore } from "@/app/types/sectorScore"
 import { prisma } from "@/lib/prisma"
 import { redis } from "@/lib/redis"
 
@@ -76,6 +77,20 @@ export async function getLast6MonthsUpTo(month: string) {
 
   if (data) await redis.set(cacheKey, data, { ex: 86400 })
   return data
+}
+
+export async function getSectorScoresByMonth(month: string) {
+  const cacheKey = `sectors:${month}`
+  const cached = await redis.get<ISectorScore[]>(cacheKey)
+  if (cached) return cached
+
+  const data = await prisma.sectorScore.findMany({
+    where:   { index: { month } },
+    orderBy: { sector: "asc" },
+  })
+
+  if (data.length) await redis.set(cacheKey, data, { ex: 86400 })
+  return data as ISectorScore[]
 }
 
 export async function getPollByMonth(month: string) {
