@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import Link from "next/link";
+import Result from "./Result";
 
 export default async function UnsubscribePage({
   searchParams,
@@ -35,22 +35,3 @@ export default async function UnsubscribePage({
   );
 }
 
-function Result({
-  title,
-  description,
-  error = false,
-}: {
-  title: string;
-  description: string;
-  error?: boolean;
-}) {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center space-y-2">
-        <p className={`text-sm font-semibold ${error ? "text-red-500" : ""}`}>{title}</p>
-        <p className="text-sm text-muted-foreground">{description}</p>
-        <Link href="/" className="text-sm underline">Back to site →</Link>
-      </div>
-    </div>
-  );
-}

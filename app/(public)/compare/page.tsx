@@ -10,17 +10,12 @@ import {
 } from '@/components/ui/breadcrumb'
 import Link from 'next/link'
 import { IMonthlyIndex } from '@/app/types/monthlyIndex'
+import { formatMonthLabel } from '@/utils/formatMonthLabel'
 
 export const revalidate = 3600
 
 interface ComparePageProps {
   searchParams: Promise<{ a?: string; b?: string }>
-}
-
-function formatMonthLabel(month: string): string {
-  const [year, mon] = month.split('-')
-  const date = new Date(Number(year), Number(mon) - 1, 1)
-  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
 }
 
 export default async function ComparePage({ searchParams }: ComparePageProps) {
@@ -45,7 +40,6 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
   return (
     <div className="mx-auto max-w-5xl px-4 md:px-6 py-8 space-y-8">
-
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

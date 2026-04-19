@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Resend } from "resend";
 import { WelcomeEmailTemplate } from "@/components/email/WelcomeEmailTemplate";
-import Link from "next/link";
+import Result from "../unsubscribe/Result";
 
 const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vn-pulse.com";
@@ -46,25 +46,5 @@ export default async function VerifyPage({
       title="You're verified!"
       description="You'll receive the next VN Pulse issue in your inbox."
     />
-  );
-}
-
-function Result({
-  title,
-  description,
-  error = false,
-}: {
-  title: string;
-  description: string;
-  error?: boolean;
-}) {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center space-y-2">
-        <p className={`text-sm font-semibold ${error ? "text-red-500" : ""}`}>{title}</p>
-        <p className="text-sm text-muted-foreground">{description}</p>
-        <Link href="/" className="text-sm underline">Back to site →</Link>
-      </div>
-    </div>
   );
 }

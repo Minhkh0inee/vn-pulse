@@ -9,20 +9,11 @@ import { getLast6Months, getLatestTwoIndexes, getPollByMonth } from '@/lib/fetch
 import { SubscribeWidget } from '@/components/shared/SubscribeWidget'
 import { SectorIndex } from '@/components/shared/SectorIndex'
 import { Banknote, Briefcase } from 'lucide-react'
+import { formatMonthShort } from '@/utils/formatMonthShort'
+import { formatMonthLabel } from '@/utils/formatMonthLabel'
 
 export const revalidate = 3600
 
-function formatMonthLabel(month: string): string {
-  const [year, mon] = month.split('-')
-  const date = new Date(Number(year), Number(mon) - 1, 1)
-  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-}
-
-function formatMonthShort(month: string): string {
-  const [year, mon] = month.split('-')
-  const date = new Date(Number(year), Number(mon) - 1, 1)
-  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-}
 
 export default async function HomePage() {
   const [twoIndexes, last6Raw] = await Promise.all([

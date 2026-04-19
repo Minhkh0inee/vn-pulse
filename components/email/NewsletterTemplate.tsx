@@ -1,17 +1,12 @@
 import React from 'react'
 import { IMonthlyIndex } from '@/app/types/monthlyIndex'
+import { formatMonthLabel } from '@/utils/formatMonthLabel'
 
 interface NewsletterTemplateProps {
   index: IMonthlyIndex 
   previousScore?: number
   baseUrl: string
   unsubscribeUrl: string
-}
-
-function formatMonthLabel(month: string): string {
-  const [year, mon] = month.split('-')
-  const date = new Date(Number(year), Number(mon) - 1, 1)
-  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 }
 
 function getTrendLabel(current: number, previous?: number): { delta: string; isUp: boolean; isFlat: boolean } {

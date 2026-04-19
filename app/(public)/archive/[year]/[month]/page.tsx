@@ -18,34 +18,11 @@ import { Banknote, Briefcase } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import { SectorIndex } from '@/components/shared/SectorIndex'
 import { ISectorScore } from '@/app/types/sectorScore'
+import { formatMonthLabel } from '@/utils/formatMonthLabel'
+import { formatMonthShort } from '@/utils/formatMonthShort'
+import { formatMonthVi } from '@/utils/formatMonthVi'
 
 export const revalidate = 86400
-
-function formatMonthLabel(month: string): string {
-  const [year, mon] = month.split('-')
-  const date = new Date(Number(year), Number(mon) - 1, 1)
-  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-}
-
-function formatMonthShort(month: string): string {
-  const [year, mon] = month.split('-')
-  const date = new Date(Number(year), Number(mon) - 1, 1)
-  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-}
-
-function formatMonthVi(month: string): string {
-  const [, mon] = month.split('-')
-  const [year] = month.split('-')
-  return `Tháng ${Number(mon)}/${year}`
-}
-
-export async function generateStaticParams() {
-  const all = await getAllIndexes()
-  return all.map(idx => ({
-    year:  String(idx.year),
-    month: String(idx.month_num).padStart(2, '0'),
-  }))
-}
 
 export default async function ArchiveDetailPage({
   params,
