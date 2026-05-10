@@ -37,8 +37,8 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
-        </PostHogProvider>
         <Toaster />
+        </PostHogProvider>
       </body>
     </html>
   );
