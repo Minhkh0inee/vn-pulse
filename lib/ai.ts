@@ -4,7 +4,7 @@ import { z } from "zod";
 import { IMonthlyIndex } from "@/app/types/monthlyIndex";
 import { ICommentaryInput } from "@/types/commentary";
 
-const geminiFlash = google("gemini-2.5-flash");
+export const geminiFlash = google("gemini-2.5-flash");
 
 const insightElement = z.object({
   icon: z.string().describe("Single emoji related to the insight"),

@@ -93,6 +93,34 @@ export async function getSectorScoresByMonth(month: string) {
   return data as ISectorScore[]
 }
 
+const VALID_SECTORS = ["fintech", "ecommerce", "edtech", "healthtech", "deeptech"] as const
+export type Sector = typeof VALID_SECTORS[number]
+
+function isSector(value: string): value is Sector {
+  return VALID_SECTORS.includes(value as Sector)
+}
+
+export async function getSectorScoresByIndexIds(indexIds: string[]): Promise<ISectorScore[]> {
+  const raw = await prisma.sectorScore.findMany({
+  where: { indexId: { in: indexIds } },
+})
+  const cacheKey = `sectors:${indexIds.sort().join(",")}`
+
+  const cached = await redis.get<ISectorScore[]>(cacheKey)
+  if (cached) return cached
+
+  const data: ISectorScore[] = raw
+    .filter(item => isSector(item.sector))
+    .map(item => ({
+      ...item,
+      sector: item.sector as Sector,
+    }))
+
+  await redis.set(cacheKey, data, { ex: 3600 })
+
+  return data
+}
+
 export async function getPollByMonth(month: string) {
   const data = await prisma.poll.findUnique({
     where: { month },
