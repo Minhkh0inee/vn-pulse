@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { PostHogProvider } from "./postHogProvider";
 
 const interSans = Inter({
   variable: "--font-inter-sans",
@@ -32,9 +33,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
+        <PostHogProvider>
         <Providers>
           {children}
         </Providers>
+        </PostHogProvider>
         <Toaster />
       </body>
     </html>
