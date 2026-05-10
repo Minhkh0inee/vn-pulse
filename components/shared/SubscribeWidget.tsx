@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { subscribeAction, type SubscribeState } from "@/app/actions/subscribe";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import posthog from "posthog-js";
 
 const initialState: SubscribeState = {};
 
@@ -34,7 +35,14 @@ export function SubscribeWidget() {
         </p>
       </div>
 
-      <form action={action} className="flex gap-2">
+      <form
+        action={action}
+        className="flex gap-2"
+        onSubmit={(e) => {
+          const email = (e.currentTarget.elements.namedItem("email") as HTMLInputElement)?.value;
+          posthog.capture("subscribe_submitted", { email });
+        }}
+      >
         <Input
           type="email"
           name="email"

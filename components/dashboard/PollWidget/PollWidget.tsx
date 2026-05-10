@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PollOption } from "./PollOption";
 import { PollThanks } from "./PollThanks";
+import posthog from "posthog-js";
 
 const OPTIONS = [
   { value: 1, emoji: "😞", label: "Very Bad" },
@@ -75,12 +76,18 @@ export function PollWidget({
     if (selected === null) return;
     setError(null);
     setLoading(true);
+    posthog.capture("poll_vote_submitted", {
+      month: rawMonth,
+      rating: selected,
+      label: OPTIONS.find((o) => o.value === selected)!.label,
+    });
     startTransition(async () => {
       try {
         await handleVote(selected);
         setThanksEmoji(OPTIONS.find((o) => o.value === selected)!.emoji);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Vote thất bại");
+        posthog.captureException(err instanceof Error ? err : new Error(String(err)));
       } finally {
         setLoading(false);
       }
@@ -106,7 +113,14 @@ export function PollWidget({
             emoji={opt.emoji}
             label={opt.label}
             isSelected={selected === opt.value}
-            onSelect={setSelected}
+            onSelect={(v) => {
+              setSelected(v);
+              posthog.capture("poll_option_selected", {
+                month: rawMonth,
+                rating: v,
+                label: opt.label,
+              });
+            }}
           />
         ))}
       </div>

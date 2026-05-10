@@ -5,6 +5,7 @@ import { z } from "zod";
 import { randomBytes } from "crypto";
 import { Resend } from "resend";
 import { VerifyEmailTemplate } from "@/components/email/VerifyEmailTemplate";
+import { getPostHogClient } from "@/lib/posthog-server";
 
 const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vn-pulse.com";
@@ -63,9 +64,24 @@ export async function subscribeAction(
       }),
     });
 
+    const posthog = getPostHogClient();
+    posthog.capture({
+      distinctId: email,
+      event: "subscribe_succeeded",
+      properties: { email, is_new: true },
+    });
+    await posthog.shutdown();
+
     return { success: true };
   } catch (err) {
     console.error("[subscribe]", err);
+    const posthog = getPostHogClient();
+    posthog.capture({
+      distinctId: email,
+      event: "subscribe_failed",
+      properties: { email, error: err instanceof Error ? err.message : String(err) },
+    });
+    await posthog.shutdown();
     return { error: "Something went wrong. Please try again." };
   }
 }

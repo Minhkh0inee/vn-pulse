@@ -3,6 +3,7 @@ import { prisma }                                from "@/lib/prisma"
 import { redis }                                 from "@/lib/redis"
 import { hashIP, secondsUntilEndOfMonth }        from "@/utils/month.utils"
 import { z }                                     from "zod"
+import { getPostHogClient }                      from "@/lib/posthog-server"
 
 const VoteSchema = z.object({
   rating: z.number().int().min(1).max(5),
@@ -115,6 +116,19 @@ export async function POST(
         : 0,
     }
   })
+
+  const posthog = getPostHogClient()
+  posthog.capture({
+    distinctId: ipHash,
+    event: "poll_vote_succeeded",
+    properties: {
+      month,
+      rating,
+      total_votes: totalVotes,
+      avg_rating: Math.round(avgRating * 10) / 10,
+    },
+  })
+  await posthog.shutdown()
 
   return NextResponse.json({
     success: true,

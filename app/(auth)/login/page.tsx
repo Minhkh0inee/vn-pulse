@@ -1,8 +1,19 @@
 "use client";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useEffect } from "react";
+import posthog from "posthog-js";
 
 export default function LoginPage() {
   const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      posthog.identify(session.user.email, {
+        email: session.user.email,
+        name: session.user.name ?? undefined,
+      });
+    }
+  }, [session]);
 
   if (session) {
     return (
@@ -22,7 +33,10 @@ export default function LoginPage() {
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-2xl font-bold mb-6">Welcome</h1>
       <button
-        onClick={() => signIn("google")}
+        onClick={() => {
+          posthog.capture("admin_login_clicked", { provider: "google" });
+          signIn("google");
+        }}
         className="px-6 py-3 border flex gap-2 border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
       >
         <img 

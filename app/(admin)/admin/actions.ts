@@ -7,6 +7,7 @@ import { redis } from "@/lib/redis";
 import type { FormState, SectorRow } from "@/components/admin/types";
 import { sendNewsletter } from "@/app/actions/newsletter";
 import type { IMonthlyIndex } from "@/app/types/monthlyIndex";
+import { getPostHogClient } from "@/lib/posthog-server";
 
 export async function getExistingMonths(): Promise<string[]> {
   const records = await prisma.monthlyIndex.findMany({
@@ -126,6 +127,18 @@ export async function publishIndex(
     if (publishedIndex) {
       await sendNewsletter(publishedIndex as IMonthlyIndex);
     }
+
+    const posthog = getPostHogClient();
+    posthog.capture({
+      distinctId: session.user.email,
+      event: "index_published",
+      properties: {
+        month: form.month.trim(),
+        total_score: totalScore,
+        publisher_email: session.user.email,
+      },
+    });
+    await posthog.shutdown();
 
     return { success: true };
   } catch (error) {
