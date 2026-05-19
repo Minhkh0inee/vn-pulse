@@ -17,7 +17,7 @@ export default function Header() {
             <BarChart2 className="size-4" />
           </span>
           <span className="text-sm font-semibold text-[var(--foreground)] hidden sm:block">
-            VN Pulse
+            VN Pulse (Beta)
           </span>
         </Link>
 
