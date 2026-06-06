@@ -1,4 +1,4 @@
-import { scoreColor } from "./shared"
+import { getScoreColor } from "@/utils/scoreCard.utils"
 
 interface StatsBarProps {
   totalScore: number
@@ -9,7 +9,7 @@ interface StatsBarProps {
 
 export function StatsBar({ totalScore, fundingScore, jobPostingScore, newsVolumeScore }: StatsBarProps) {
   const stats = [
-    { label: "Total Score", value: totalScore.toFixed(1), color: scoreColor(totalScore) },
+    { label: "Total Score", value: totalScore.toFixed(1), color: getScoreColor(totalScore) },
     { label: "Funding Score", value: fundingScore || "—", color: "text-white" },
     { label: "Job Postings Score", value: jobPostingScore || "—", color: "text-white" },
     { label: "News Volume Score", value: newsVolumeScore || "—", color: "text-white" },

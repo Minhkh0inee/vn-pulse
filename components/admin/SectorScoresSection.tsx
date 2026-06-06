@@ -6,14 +6,7 @@ import type { SectorRow } from "./types"
 import type { Sector } from "@/app/types/sectorScore"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import GenerateSectorSummaryBtn from "@/components/dashboard/GenerateSectorSummaryBtn"
-
-const SECTOR_LABELS: Record<Sector, string> = {
-  fintech: "Fintech",
-  ecommerce: "E-commerce",
-  edtech: "EdTech",
-  healthtech: "HealthTech",
-  deeptech: "DeepTech",
-}
+import { SECTOR_LABELS } from "@/lib/constant/sectors"
 
 interface SectorScoresSectionProps {
   sectorScores: SectorRow[]

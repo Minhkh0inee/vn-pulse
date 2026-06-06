@@ -1,14 +1,8 @@
-import { parseNum, scoreColor } from "./shared"
+import { getScoreColor } from "@/utils/scoreCard.utils"
+import { parseNum } from "./shared"
 import type { SectorRow } from "./types"
 import type { Sector } from "@/app/types/sectorScore"
-
-const SECTOR_LABELS: Record<Sector, string> = {
-  fintech: "Fintech",
-  ecommerce: "E-commerce",
-  edtech: "EdTech",
-  healthtech: "HealthTech",
-  deeptech: "DeepTech",
-}
+import { SECTOR_LABELS } from "@/lib/constant/sectors"
 
 interface PreviewPanelProps {
   totalScore: number
@@ -24,7 +18,7 @@ export function PreviewPanel({ totalScore, month, weightsValid, sectorScores }: 
 
       <div className="flex flex-col items-center gap-1 py-4 border-b border-white/10">
         <p className="text-xs text-white/40 uppercase tracking-wide">Composite Index</p>
-        <p className={`text-5xl font-bold tabular-nums ${scoreColor(totalScore)}`}>
+        <p className={`text-5xl font-bold tabular-nums ${getScoreColor(totalScore)}`}>
           {totalScore.toFixed(1)}
         </p>
         <p className="text-xs text-white/30">/ 100</p>

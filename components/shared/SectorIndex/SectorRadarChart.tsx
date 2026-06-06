@@ -3,16 +3,9 @@
 import { useEffect, useRef } from "react"
 import * as d3 from "d3"
 import type { ISectorScore, Sector } from "@/app/types/sectorScore"
+import { SECTOR_LABELS } from "@/lib/constant/sectors"
 
 const SECTORS: Sector[] = ["fintech", "ecommerce", "edtech", "healthtech", "deeptech"]
-
-const SECTOR_LABELS: Record<Sector, string> = {
-  fintech: "Fintech",
-  ecommerce: "E-comm",
-  edtech: "EdTech",
-  healthtech: "HealthTech",
-  deeptech: "DeepTech",
-}
 
 interface Props {
   sectorScores: ISectorScore[]

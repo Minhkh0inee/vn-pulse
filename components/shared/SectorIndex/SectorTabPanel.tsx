@@ -1,13 +1,6 @@
 import type { ISectorScore } from "@/app/types/sectorScore"
+import { SECTOR_LABELS } from "@/lib/constant/sectors"
 import { getScoreColor } from "@/utils/scoreCard.utils"
-
-const SECTOR_LABELS: Record<string, string> = {
-  fintech: "Fintech",
-  ecommerce: "E-commerce",
-  edtech: "EdTech",
-  healthtech: "HealthTech",
-  deeptech: "DeepTech",
-}
 
 interface Props {
   sectorScore: ISectorScore | undefined

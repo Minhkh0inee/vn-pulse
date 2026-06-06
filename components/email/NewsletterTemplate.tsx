@@ -1,6 +1,7 @@
 import React from 'react'
 import { IMonthlyIndex } from '@/app/types/monthlyIndex'
 import { formatMonthLabel } from '@/utils/formatMonthLabel'
+import { SECTOR_LABELS } from '@/lib/constant/sectors'
 
 interface NewsletterTemplateProps {
   index: IMonthlyIndex 
@@ -24,14 +25,6 @@ function getScoreColor(score: number): string {
   if (score >= 70) return '#16a34a'
   if (score >= 50) return '#d97706'
   return '#dc2626'
-}
-
-const SECTOR_LABELS: Record<string, string> = {
-  fintech: 'Fintech',
-  ecommerce: 'E-commerce',
-  edtech: 'EdTech',
-  healthtech: 'HealthTech',
-  deeptech: 'DeepTech',
 }
 
 export const NewsletterTemplate = ({

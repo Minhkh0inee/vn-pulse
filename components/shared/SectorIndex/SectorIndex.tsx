@@ -4,18 +4,11 @@ import { useState, useCallback } from "react"
 import type { ISectorScore, Sector } from "@/app/types/sectorScore"
 import dynamic from "next/dynamic"
 import SectorTabPanel from "./SectorTabPanel"
+import { SECTOR_LABELS } from "@/lib/constant/sectors"
 
 const SectorRadarChart = dynamic(() => import("./SectorRadarChart"), { ssr: false })
 
 const SECTORS: Sector[] = ["fintech", "ecommerce", "edtech", "healthtech", "deeptech"]
-
-const SECTOR_LABELS: Record<Sector, string> = {
-  fintech: "Fintech",
-  ecommerce: "E-commerce",
-  edtech: "EdTech",
-  healthtech: "HealthTech",
-  deeptech: "DeepTech",
-}
 
 interface Props {
   sectorScores: ISectorScore[]
