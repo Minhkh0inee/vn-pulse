@@ -6,6 +6,7 @@ import { randomBytes } from "crypto";
 import { Resend } from "resend";
 import { VerifyEmailTemplate } from "@/components/email/VerifyEmailTemplate";
 import { getPostHogClient } from "@/lib/posthog-server";
+import { subscribeRateLimit } from "@/lib/rate-limiter";
 
 const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vn-pulse.com";
@@ -24,6 +25,11 @@ export async function subscribeAction(
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   const { email } = parsed.data;
+
+    const { success } = await subscribeRateLimit.limit(email)
+    if (!success) {
+      return { error: "Quá nhiều yêu cầu, vui lòng thử lại sau." }
+    }
 
   try {
     const existing = await prisma.subscriber.findUnique({ where: { email } });

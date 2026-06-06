@@ -1,8 +1,21 @@
 import { geminiFlash }                            from "@/lib/ai"
 import { getLast6Months, getSectorScoresByIndexIds } from "@/lib/fetchers"
+import { chatRateLimit } from "@/lib/rate-limiter"
 import { convertToModelMessages, streamText }     from "ai"
+import { NextResponse } from "next/server"
 
 export async function POST(req: Request) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown"
+
+  const { success, remaining } = await chatRateLimit.limit(ip)
+  console.log("[chat] ip:", ip, "| success:", success, "| remaining:", remaining)
+  if (!success) {
+    return NextResponse.json(
+      { success: false, error: "Rate limit exceeded" },
+      { status: 429 }
+    )
+  }
+  
   const { messages } = await req.json()
 
   const data = await getLast6Months()

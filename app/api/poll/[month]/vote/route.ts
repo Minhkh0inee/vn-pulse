@@ -4,6 +4,7 @@ import { redis }                                 from "@/lib/redis"
 import { hashIP, secondsUntilEndOfMonth }        from "@/utils/month.utils"
 import { z }                                     from "zod"
 import { getPostHogClient }                      from "@/lib/posthog-server"
+import { pollVoteRateLimit } from "@/lib/rate-limiter"
 
 const VoteSchema = z.object({
   rating: z.number().int().min(1).max(5),
@@ -14,7 +15,26 @@ export async function POST(
   { params }: { params: Promise<{ month: string }> }
 ) {
   const { month } = await params
-  const ip        = req.headers.get("x-forwarded-for") ?? "127.0.0.1"
+  const ip =
+  req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+  req.headers.get("x-real-ip") ??
+  req.headers.get("cf-connecting-ip") ??
+  "unknown"
+
+  const { success, remaining, reset } = await pollVoteRateLimit.limit(ip)
+  if (!success) {
+    return NextResponse.json(
+      { success: false, error: "Quá nhiều request, thử lại sau." },
+      {
+        status: 429,
+        headers: {
+          "X-RateLimit-Remaining": String(remaining),
+          "X-RateLimit-Reset":     String(reset),
+        },
+      }
+    )
+  }
+
   const ipHash    = await hashIP(ip)
 
   const body   = await req.json()
@@ -54,7 +74,7 @@ export async function POST(
   const votedKey = `poll:voted:${month}:${ipHash}`
 
   const [redisVoted, dbVoted] = await Promise.all([
-    redis.get(votedKey),
+    redis.get(votedKey).catch(() => null),
     prisma.pollResponse.findUnique({
       where:  { pollId_ipHash: { pollId: poll.id, ipHash } },
       select: { id: true },
