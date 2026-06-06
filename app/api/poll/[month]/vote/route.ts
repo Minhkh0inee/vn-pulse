@@ -101,8 +101,8 @@ export async function POST(
         userAgent: req.headers.get("user-agent") ?? undefined,
       },
     })
-  } catch (error: any) {
-    if (error?.code === "P2002") {
+  } catch (error: unknown) {
+    if (error instanceof Error && (error as { code?: string }).code === "P2002") {
       return NextResponse.json(
         { success: false, error: "Bạn đã vote tháng này rồi" },
         { status: 429 }

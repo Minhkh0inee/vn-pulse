@@ -10,7 +10,7 @@ export async function GET() {
         {
           success: true,
           data: cached,
-          meta: { total: (cached as any[]).length },
+          meta: { total: Array.isArray(cached) ? cached.length : 0 },
           source: "cache",
         },
         {

@@ -153,7 +153,7 @@ export async function publishIndex(
   }
 }
 
-function isMonthMatch(month: string): RegExpMatchArray | null | any {
+function isMonthMatch(month: string): RegExpMatchArray | null | { success: false; error: string } {
   const monthMatch = month.trim().match(/^(\d{4})-(\d{2})$/);
   if (!monthMatch) {
     return { success: false, error: "Invalid month format (expected YYYY-MM)" };

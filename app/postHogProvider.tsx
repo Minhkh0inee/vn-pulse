@@ -1,7 +1,4 @@
 'use client'
-
-import { useEffect } from "react"
-
 import posthog from 'posthog-js'
 import { PostHogProvider as PHProvider } from '@posthog/react'
 
