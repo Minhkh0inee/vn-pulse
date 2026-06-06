@@ -27,6 +27,7 @@ export async function publishIndex(
   }
 
   const monthMatch = isMonthMatch(form.month);
+  if ("error" in monthMatch) return monthMatch;
 
   const year = parseInt(monthMatch[1]);
   const month_num = parseInt(monthMatch[2]);
@@ -153,7 +154,7 @@ export async function publishIndex(
   }
 }
 
-function isMonthMatch(month: string): RegExpMatchArray | null | { success: false; error: string } {
+function isMonthMatch(month: string): RegExpMatchArray | { success: false; error: string } {
   const monthMatch = month.trim().match(/^(\d{4})-(\d{2})$/);
   if (!monthMatch) {
     return { success: false, error: "Invalid month format (expected YYYY-MM)" };
