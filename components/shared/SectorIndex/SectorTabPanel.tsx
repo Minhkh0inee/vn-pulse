@@ -1,6 +1,6 @@
 import type { ISectorScore } from "@/app/types/sectorScore"
 import { SECTOR_LABELS } from "@/lib/constant/sectors"
-import { getScoreColor } from "@/utils/scoreCard.utils"
+import { computeTrend, getScoreColor, getTrendColor } from "@/utils/scoreCard.utils"
 
 interface Props {
   sectorScore: ISectorScore | undefined
@@ -16,15 +16,8 @@ export default function SectorTabPanel({ sectorScore }: Props) {
   }
 
   const { score, trend, summaryEn, summaryVi } = sectorScore
-  const trendAbs = trend != null ? Math.abs(trend) : null
-  const trendDir = trend == null ? "stable" : trend > 0 ? "up" : trend < 0 ? "down" : "stable"
-  const trendIcon = trendDir === "up" ? "↑" : trendDir === "down" ? "↓" : "→"
-  const trendColor =
-    trendDir === "up"
-      ? "text-[var(--trend-up)]"
-      : trendDir === "down"
-        ? "text-[var(--trend-down)]"
-        : "text-[var(--muted-foreground)]"
+  const { direction, delta, absStr, icon } = computeTrend(trend)
+  const trendColor = getTrendColor(direction)
 
   const summary = summaryEn || summaryVi
 
@@ -40,10 +33,10 @@ export default function SectorTabPanel({ sectorScore }: Props) {
           </p>
         </div>
 
-        {trendAbs != null && (
+        {delta != null && (
           <div className={`flex items-center gap-1 mb-1 text-sm font-medium ${trendColor}`}>
-            <span>{trendIcon}</span>
-            <span>{trendAbs.toFixed(1)} pts</span>
+            <span>{icon}</span>
+            <span>{absStr} pts</span>
             <span className="text-[var(--muted-foreground)] font-normal text-xs ml-1">vs last month</span>
           </div>
         )}

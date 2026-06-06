@@ -18,11 +18,34 @@ export function getLabelColor(score: number): string {
 
 type TrendDirection = 'up' | 'down' | 'stable'
 
+export interface TrendResult {
+  direction: TrendDirection
+  delta: number | null
+  deltaStr: string
+  absStr: string
+  icon: string
+  isFlat: boolean
+}
+
+export function computeTrend(diff: number | null | undefined): TrendResult {
+  if (diff == null) {
+    return { direction: 'stable', delta: null, deltaStr: '—', absStr: '0.0', icon: '→', isFlat: true }
+  }
+  const isFlat = Math.abs(diff) < 0.1
+  const direction: TrendDirection = isFlat ? 'stable' : diff > 0 ? 'up' : 'down'
+  return {
+    direction,
+    delta: diff,
+    deltaStr: isFlat ? '—' : `${diff > 0 ? '+' : ''}${diff.toFixed(1)}`,
+    absStr: Math.abs(diff).toFixed(1),
+    icon: direction === 'up' ? '↑' : direction === 'down' ? '↓' : '→',
+    isFlat,
+  }
+}
+
 export function getTrend(score: number, previousScore?: number): TrendDirection {
   if (previousScore === undefined) return 'stable'
-  if (score > previousScore) return 'up'
-  if (score < previousScore) return 'down'
-  return 'stable'
+  return computeTrend(score - previousScore).direction
 }
 
 export function getTrendIcon(trend: TrendDirection): string {

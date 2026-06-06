@@ -19,7 +19,6 @@ import { notFound } from 'next/navigation'
 import { SectorIndex } from '@/components/shared/SectorIndex'
 import { ISectorScore } from '@/app/types/sectorScore'
 import { formatMonthLabel } from '@/utils/formatMonthLabel'
-import { formatMonthShort } from '@/utils/formatMonthShort'
 import { formatMonthVi } from '@/utils/formatMonthVi'
 
 export const revalidate = 86400
@@ -41,7 +40,7 @@ export default async function ArchiveDetailPage({
 
   // last6Raw is DESC; reverse for chronological chart, mark last as current
   const trendData: TrendDataPoint[] = [...last6Raw].reverse().map((idx, _, arr) => ({
-    month:     formatMonthShort(idx.month),
+    month:     formatMonthLabel(idx.month),
     score:     idx.totalScore,
     isCurrent: idx.month === arr[arr.length - 1].month,
   }))

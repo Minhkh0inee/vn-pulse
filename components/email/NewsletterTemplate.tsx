@@ -2,23 +2,13 @@ import React from 'react'
 import { IMonthlyIndex } from '@/app/types/monthlyIndex'
 import { formatMonthLabel } from '@/utils/formatMonthLabel'
 import { SECTOR_LABELS } from '@/lib/constant/sectors'
+import { computeTrend } from '@/utils/scoreCard.utils'
 
 interface NewsletterTemplateProps {
   index: IMonthlyIndex 
   previousScore?: number
   baseUrl: string
   unsubscribeUrl: string
-}
-
-function getTrendLabel(current: number, previous?: number): { delta: string; isUp: boolean; isFlat: boolean } {
-  if (previous == null) return { delta: '', isUp: false, isFlat: true }
-  const diff = current - previous
-  const isFlat = Math.abs(diff) < 0.1
-  return {
-    delta: isFlat ? '—' : `${diff > 0 ? '+' : ''}${diff.toFixed(1)}`,
-    isUp: diff > 0,
-    isFlat,
-  }
 }
 
 function getScoreColor(score: number): string {
@@ -34,12 +24,11 @@ export const NewsletterTemplate = ({
   unsubscribeUrl,
 }: NewsletterTemplateProps) => {
   const monthLabel = formatMonthLabel(index.month)
-  const { delta, isUp, isFlat } = getTrendLabel(index.totalScore, previousScore)
+  const { direction, deltaStr, icon, isFlat } = computeTrend(previousScore != null ? index.totalScore - previousScore : null)
   const scoreColor = getScoreColor(index.totalScore)
   const readMoreUrl = `${baseUrl}/archive/${index.year}/${String(index.month_num).padStart(2, '0')}`
 
-  const trendColor = isFlat ? '#6b7280' : isUp ? '#16a34a' : '#dc2626'
-  const trendArrow = isFlat ? '' : isUp ? '↑' : '↓'
+  const trendColor = isFlat ? '#6b7280' : direction === 'up' ? '#16a34a' : '#dc2626'
 
   return (
     <html>
@@ -97,13 +86,13 @@ export const NewsletterTemplate = ({
                               {!isFlat && (
                                 <td style={{ paddingLeft: 20, verticalAlign: 'middle' }}>
                                   <div style={{
-                                    backgroundColor: isUp ? '#dcfce7' : '#fee2e2',
+                                    backgroundColor: direction === 'up' ? '#dcfce7' : '#fee2e2',
                                     borderRadius: 8,
                                     padding: '6px 14px',
                                     display: 'inline-block',
                                   }}>
                                     <span style={{ color: trendColor, fontSize: 18, fontWeight: 700 }}>
-                                      {trendArrow} {delta}
+                                      {icon} {deltaStr}
                                     </span>
                                     <p style={{ margin: '2px 0 0', color: trendColor, fontSize: 12 }}>
                                       vs last month

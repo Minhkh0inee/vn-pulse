@@ -9,7 +9,6 @@ import { getLast6Months, getLatestTwoIndexes, getPollByMonth } from '@/lib/fetch
 import { SubscribeWidget } from '@/components/shared/SubscribeWidget'
 import { SectorIndex } from '@/components/shared/SectorIndex'
 import { Banknote, Briefcase } from 'lucide-react'
-import { formatMonthShort } from '@/utils/formatMonthShort'
 import { formatMonthLabel } from '@/utils/formatMonthLabel'
 
 export const revalidate = 3600
@@ -32,7 +31,7 @@ export default async function HomePage() {
 
   const poll = await getPollByMonth(latest.month)
   const trendData: TrendDataPoint[] = [...last6Raw].reverse().map((idx, _, arr) => ({
-    month:     formatMonthShort(idx.month),
+    month:     formatMonthLabel(idx.month),
     score:     idx.totalScore,
     isCurrent: idx.month === arr[arr.length - 1].month,
   }))
