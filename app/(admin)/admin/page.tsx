@@ -13,7 +13,7 @@ import { ComponentScoresSection } from "@/components/admin/ComponentScoresSectio
 import { WeightsSection } from "@/components/admin/WeightsSection"
 import { RawSignalDataSection } from "@/components/admin/RawSignalDataSection"
 import { SectorScoresSection } from "@/components/admin/SectorScoresSection"
-import { CommentarySection } from "@/components/admin/CommentarySection"
+import { CommentarySectionEditor } from "@/components/admin/CommentarySection"
 import { PreviewPanel } from "@/components/admin/PreviewPanel"
 import { ActionBar } from "@/components/admin/ActionBar"
 
@@ -162,7 +162,7 @@ export default function AdminPage() {
             onChange={setSectorField}
           />
 
-          <CommentarySection
+          <CommentarySectionEditor
             commentary={form.commentary}
             summaryVi={form.summaryVi}
             summaryEn={form.summaryEn}

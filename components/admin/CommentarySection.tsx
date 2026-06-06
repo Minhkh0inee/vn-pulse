@@ -5,7 +5,7 @@ import GenerateCommentaryBtn from "@/components/dashboard/GenerateCommentaryBtn"
 import { SectionCard, FieldGroup } from "./shared"
 import type { ICommentaryInput } from "@/types/commentary"
 
-interface CommentarySectionProps {
+interface CommentarySectionEditorProps {
   commentary: string
   summaryVi: string
   summaryEn: string
@@ -14,14 +14,14 @@ interface CommentarySectionProps {
   onChange: (key: "commentary" | "summaryVi" | "summaryEn", value: string) => void
 }
 
-export function CommentarySection({
+export function CommentarySectionEditor({
   commentary,
   summaryVi,
   summaryEn,
   canGenerate,
   commentaryInput,
   onChange,
-}: CommentarySectionProps) {
+}: CommentarySectionEditorProps) {
   return (
     <SectionCard title="Commentary & Summaries">
       <div className="flex flex-col gap-2">

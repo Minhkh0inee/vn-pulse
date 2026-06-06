@@ -11,11 +11,3 @@ export const setKey = async (key: string, value: unknown, ttl: number) => {
 export const deleteKey = async (key: string) => {
    await redis.del(key);
 };
-
-export const deletePattern = async (pattern: string) => {
-  // ⚠️ Note: redis.keys() is O(N) — fine for small datasets
-  const keys = await redis.keys(pattern);
-  if (keys.length > 0) {
-    await redis.del(...keys);
-  }
-};

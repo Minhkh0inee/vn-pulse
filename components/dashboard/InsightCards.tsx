@@ -25,7 +25,7 @@ export function InsightCardsSkeleton() {
   )
 }
 
-export function InsightCards({ insights }: { insights: Insight[] }) {
+export function InsightSummaryCard({ insights }: { insights: Insight[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {insights.map((insight, index) => (
