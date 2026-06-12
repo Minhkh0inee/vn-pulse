@@ -46,6 +46,7 @@ model MonthlyIndex {
   publishedAt       DateTime?
 
   sectorScores      SectorScore[]
+  insightCards      InsightCard[]
   auditLogs         AuditLog[]
 
   createdAt   DateTime @default(now())
@@ -70,6 +71,20 @@ model SectorScore {
 
   @@unique([indexId, sector])
   @@index([sector])
+}
+
+model InsightCard {
+  id      String @id @default(cuid())
+  indexId String
+  index   MonthlyIndex @relation(fields: [indexId], references: [id])
+
+  icon    String  // single emoji
+  text    String  // Vietnamese, under 20 words
+  type    String  // "positive" | "warning" | "neutral"
+
+  createdAt DateTime @default(now())
+
+  @@index([indexId])
 }
 
 model Poll {

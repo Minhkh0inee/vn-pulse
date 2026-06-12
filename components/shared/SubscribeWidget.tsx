@@ -1,17 +1,18 @@
 "use client";
 
 import { useActionState } from "react";
-import { subscribeAction, type SubscribeState } from "@/app/actions/subscribe";
+import { subscribeAction } from "@/app/actions/subscribe";
+import type { ActionResponse } from "@/app/types/actionResponse";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import posthog from "posthog-js";
 
-const initialState: SubscribeState = {};
+const initialState: ActionResponse | null = null;
 
 export function SubscribeWidget() {
   const [state, action, isPending] = useActionState(subscribeAction, initialState);
 
-  if (state.success) {
+  if (state?.success) {
     return (
       <div className="w-full md:max-w-xl rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 space-y-1">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)]">
@@ -55,7 +56,7 @@ export function SubscribeWidget() {
         </Button>
       </form>
 
-      {state.error && (
+      {state?.success === false && (
         <p className="text-xs text-red-500">{state.error}</p>
       )}
     </div>

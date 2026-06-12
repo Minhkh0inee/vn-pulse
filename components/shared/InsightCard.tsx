@@ -9,7 +9,7 @@ export type InsightCategory = 'funding' | 'jobs' | 'news' | 'sentiment' | 'gener
 export interface InsightCardProps {
   category?:  InsightCategory
   headline:   string
-  body:       string
+  body?:      string
   isLoading?: boolean
 }
 
@@ -79,9 +79,11 @@ const InsightCard: React.FC<InsightCardProps> = ({
       </h3>
 
       {/* Body */}
-      <p className="text-xs leading-5 text-[var(--muted-foreground)]">
-        {body}
-      </p>
+      {body && (
+        <p className="text-xs leading-5 text-[var(--muted-foreground)]">
+          {body}
+        </p>
+      )}
 
     </div>
   )

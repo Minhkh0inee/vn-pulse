@@ -1,5 +1,6 @@
 import { AuditLog } from "@prisma/client";
 import { ISectorScore } from "./sectorScore";
+import { IInsightCard } from "./insightCard";
 
 export interface IMonthlyIndex {
   id: string;
@@ -41,6 +42,7 @@ export interface IMonthlyIndex {
 
   // Relations
   sectorScores?: ISectorScore[];
+  insightCards?: IInsightCard[];
   auditLogs?: AuditLog[];
 }
 

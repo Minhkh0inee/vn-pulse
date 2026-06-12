@@ -7,6 +7,7 @@ import { Resend } from "resend";
 import { VerifyEmailTemplate } from "@/components/email/VerifyEmailTemplate";
 import { getPostHogClient } from "@/lib/posthog-server";
 import { subscribeRateLimit } from "@/lib/rate-limiter";
+import type { ActionResponse } from "@/app/types/actionResponse";
 
 const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vn-pulse.com";
@@ -15,32 +16,28 @@ const schema = z.object({
   email: z.string().email("Please enter a valid email address"),
 });
 
-export type SubscribeState = { error?: string; success?: boolean };
-
 export async function subscribeAction(
-  _prev: SubscribeState,
+  _prev: ActionResponse | null,
   formData: FormData,
-): Promise<SubscribeState> {
+): Promise<ActionResponse> {
   const parsed = schema.safeParse({ email: formData.get("email") });
-  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
 
   const { email } = parsed.data;
 
-    const { success } = await subscribeRateLimit.limit(email)
-    if (!success) {
-      return { error: "Quá nhiều yêu cầu, vui lòng thử lại sau." }
-    }
+  const { success } = await subscribeRateLimit.limit(email);
+  if (!success) {
+    return { success: false, error: "Quá nhiều yêu cầu, vui lòng thử lại sau." };
+  }
 
   try {
     const existing = await prisma.subscriber.findUnique({ where: { email } });
 
     if (existing) {
-      // already verified and active
       if (existing.isVerified && !existing.unsubscribedAt) {
-        return { success: true };
+        return { success: true, data: undefined };
       }
 
-      // resend verification (unverified or previously unsubscribed)
       await resend.emails.send({
         from: "onboarding@resend.dev",
         to: email,
@@ -51,7 +48,7 @@ export async function subscribeAction(
         }),
       });
 
-      return { success: true };
+      return { success: true, data: undefined };
     }
 
     // new subscriber
@@ -78,7 +75,7 @@ export async function subscribeAction(
     });
     await posthog.shutdown();
 
-    return { success: true };
+    return { success: true, data: undefined };
   } catch (err) {
     console.error("[subscribe]", err);
     const posthog = getPostHogClient();
@@ -88,6 +85,6 @@ export async function subscribeAction(
       properties: { email, error: err instanceof Error ? err.message : String(err) },
     });
     await posthog.shutdown();
-    return { error: "Something went wrong. Please try again." };
+    return { success: false, error: "Something went wrong. Please try again." };
   }
 }

@@ -1,5 +1,6 @@
 import { IMonthlyIndex } from "@/app/types/monthlyIndex"
 import { ISectorScore, Sector } from "@/app/types/sectorScore"
+import { IInsightCard } from "@/app/types/insightCard"
 import { prisma } from "@/lib/prisma"
 import { redis } from "@/lib/redis"
 
@@ -16,7 +17,7 @@ export async function getLatestIndex() {
   })
 
   if (data) await redis.set(cacheKey, data, { ex: 3600 })
-  return data
+  return data as IMonthlyIndex | null
 }
 
 export async function getLatestTwoIndexes() {
@@ -32,7 +33,7 @@ export async function getLatestTwoIndexes() {
   })
 
   if (data) await redis.set(cacheKey, data, { ex: 3600 })
-  return data
+  return data as IMonthlyIndex[]
 }
 
 export async function getLast6Months() {
@@ -152,4 +153,17 @@ export async function getIndexByMonth(month: string) {
 
   if (data) await redis.set(cacheKey, data, { ex: 86400 }) // 24h
   return data
+}
+
+export async function getInsightCardsAI(month: string): Promise<IInsightCard[]> {
+  const cacheKey = `insight:${month}`
+  const cached = await redis.get<IInsightCard[]>(cacheKey)
+  if (cached) return cached
+
+  const data = await prisma.insightCard.findMany({
+    where: { index: { month } },
+  })
+
+  if (data.length) await redis.set(cacheKey, data, { ex: 86400 })
+  return data as IInsightCard[]
 }

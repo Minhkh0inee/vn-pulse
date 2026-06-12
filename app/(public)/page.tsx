@@ -4,12 +4,18 @@ import CommentaryComponent from '@/components/shared/CommentaryComponent/Comment
 import StatsCard from '@/components/shared/StatsCard'
 import InsightCard from '@/components/shared/InsightCard'
 import TrendChart, { TrendDataPoint } from '@/components/shared/TrendCard/TrendChart'
-import ComponentBreakdown, { ComponentBreakdownData } from '@/components/shared/ComponentBreakdown/ComponentBreakdown'
-import { getLast6Months, getLatestTwoIndexes, getPollByMonth } from '@/lib/fetchers'
+import ComponentBreakdown from '@/components/shared/ComponentBreakdown/ComponentBreakdown'
+import { getLast6Months, getLatestTwoIndexes, getPollByMonth, getInsightCardsAI } from '@/lib/fetchers'
 import { SubscribeWidget } from '@/components/shared/SubscribeWidget'
 import { SectorIndex } from '@/components/shared/SectorIndex'
 import { Banknote, Briefcase } from 'lucide-react'
 import { formatMonthLabel } from '@/utils/formatMonthLabel'
+import type { ISectorScore } from "@/app/types/sectorScore"
+import type { InsightType } from "@/app/types/insightCard"
+import type { InsightCategory } from "@/components/shared/InsightCard"
+import { buildComponentBreakdown } from '@/utils/buildComponentBreakdown.utils'
+import { buildFundingStatus } from '@/utils/buildFundingStatus.util'
+import { buildJobPostingStatus } from '@/utils/buildJobPostingStatus.util'
 
 export const revalidate = 3600
 
@@ -29,39 +35,28 @@ export default async function HomePage() {
     )
   }
 
-  const poll = await getPollByMonth(latest.month)
+  const [poll, insights] = await Promise.all([
+    getPollByMonth(latest.month),
+    getInsightCardsAI(latest.month),
+  ])
   const trendData: TrendDataPoint[] = [...last6Raw].reverse().map((idx, _, arr) => ({
     month:     formatMonthLabel(idx.month),
     score:     idx.totalScore,
     isCurrent: idx.month === arr[arr.length - 1].month,
   }))
 
-  const breakdown: ComponentBreakdownData = {
-    fundingScore:     latest.fundingScore,
-    jobPostingScore:  latest.jobPostingScore,
-    newsVolumeScore:  latest.newsVolumeScore,
-    pollScore:        latest.pollScore,
-    fundingWeight:    latest.fundingWeight,
-    jobPostingWeight: latest.jobPostingWeight,
-    newsVolumeWeight: latest.newsVolumeWeight,
-    pollWeight:       latest.pollWeight,
-  }
-  const monthLabel   = formatMonthLabel(latest.month)
-  const hasFunding     = latest.rawFundingValue != null
-  const fundingValue   = hasFunding
-    ? `$${(latest.rawFundingValue! / 1_000_000).toFixed(1)}M`
-    : 'Not available'
-  const fundingSub     = hasFunding && latest.rawFundingDeals != null
-    ? `across ${latest.rawFundingDeals} deals`
-    : 'Data not collected for this period'
+  const breakdown = buildComponentBreakdown(latest)
 
-  const hasJobs    = latest.rawJobPostings != null
-  const jobPostings = hasJobs
-    ? latest.rawJobPostings!.toLocaleString()
-    : 'Not available'
-  const jobsSub    = hasJobs
-    ? 'active listings tracked'
-    : 'Data not collected for this period'
+  const TYPE_TO_CATEGORY: Record<InsightType, InsightCategory> = {
+    positive: 'funding',
+    warning:  'sentiment',
+    neutral:  'general',
+  }
+
+  const monthLabel   = formatMonthLabel(latest.month)
+  const {value, sub} = buildFundingStatus(latest)
+  const {value: jobValue, sub:jobSub} = buildJobPostingStatus(latest)
+
 
   return (
     <div className="mx-auto max-w-5xl px-4 md:px-6 py-8 space-y-10">
@@ -82,16 +77,16 @@ export default async function HomePage() {
             <StatsCard
               icon={<Banknote className="size-4" />}
               label="Total Funding"
-              value={fundingValue}
-              sub={fundingSub}
+              value={value}
+              sub={sub}
             />
           </div>
           <div className="flex-1">
             <StatsCard
               icon={<Briefcase className="size-4" />}
               label="Job Postings"
-              value={jobPostings}
-              sub={jobsSub}
+              value={jobValue}
+              sub={jobSub}
             />
           </div>
         </div>
@@ -115,28 +110,22 @@ export default async function HomePage() {
       {/* ── SECTOR INDEX ── */}
       {latest.sectorScores && latest.sectorScores.length > 0 && (
         <section>
-          <SectorIndex sectorScores={latest.sectorScores as import("@/app/types/sectorScore").ISectorScore[]} />
+          <SectorIndex sectorScores={latest.sectorScores as ISectorScore[]} />
         </section>
       )}
 
       {/* ── AI INSIGHT SECTION ── */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <InsightCard
-          category="funding"
-          headline="Early-stage rounds dominate activity"
-          body="Seed and Series A deals accounted for the majority of disclosed transactions, signalling healthy pipeline formation in the ecosystem."
-        />
-        <InsightCard
-          category="jobs"
-          headline="Hiring momentum accelerates post-funding"
-          body="Job postings surged across funded startups, particularly in engineering and product roles, reflecting confidence in growth trajectories."
-        />
-        <InsightCard
-          category="sentiment"
-          headline="Community optimism at 6-month high"
-          body="Poll respondents rated the monthly outlook more positively than any period since Q3 2025, driven by visible deal flow and media coverage."
-        />
-      </section>
+      {insights.length > 0 && (
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {insights.map((card) => (
+            <InsightCard
+              key={card.id}
+              category={TYPE_TO_CATEGORY[card.type as InsightType]}
+              headline={`${card.icon} ${card.text}`}
+            />
+          ))}
+        </section>
+      )}
 
       {/* ── POLL SECTION ── */}
       <section className="flex justify-center">
