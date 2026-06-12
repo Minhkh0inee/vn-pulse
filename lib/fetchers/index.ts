@@ -3,6 +3,7 @@ import { ISectorScore, Sector } from "@/app/types/sectorScore"
 import { IInsightCard } from "@/app/types/insightCard"
 import { prisma } from "@/lib/prisma"
 import { redis } from "@/lib/redis"
+import { CACHE_TTL_SHORT, CACHE_TTL_LONG, LAST_N_MONTHS } from "@/lib/constant/config"
 
 
 export async function getLatestIndex() {
@@ -16,7 +17,7 @@ export async function getLatestIndex() {
     include: { sectorScores: true },
   })
 
-  if (data) await redis.set(cacheKey, data, { ex: 3600 })
+  if (data) await redis.set(cacheKey, data, { ex: CACHE_TTL_SHORT })
   return data as IMonthlyIndex | null
 }
 
@@ -32,7 +33,7 @@ export async function getLatestTwoIndexes() {
     include: { sectorScores: true },
   })
 
-  if (data) await redis.set(cacheKey, data, { ex: 3600 })
+  if (data) await redis.set(cacheKey, data, { ex: CACHE_TTL_SHORT })
   return data as IMonthlyIndex[]
 }
 
@@ -44,10 +45,10 @@ export async function getLast6Months() {
   const data = await prisma.monthlyIndex.findMany({
     where:   { isPublished: true },
     orderBy: { month: "desc" },
-    take:    6,
+    take:    LAST_N_MONTHS,
   })
 
-  if (data) await redis.set(cacheKey, data, { ex: 3600 })
+  if (data) await redis.set(cacheKey, data, { ex: CACHE_TTL_SHORT })
   return data
 }
 
@@ -61,7 +62,7 @@ export async function getAllIndexes() {
     orderBy: { month: "desc" },
   })
 
-  if (data) await redis.set(cacheKey, data, { ex: 3600 })
+  if (data) await redis.set(cacheKey, data, { ex: CACHE_TTL_SHORT })
   return data
 }
 
@@ -73,10 +74,10 @@ export async function getLast6MonthsUpTo(month: string) {
   const data = await prisma.monthlyIndex.findMany({
     where:   { isPublished: true, month: { lte: month } },
     orderBy: { month: "desc" },
-    take:    6,
+    take:    LAST_N_MONTHS,
   })
 
-  if (data) await redis.set(cacheKey, data, { ex: 86400 })
+  if (data) await redis.set(cacheKey, data, { ex: CACHE_TTL_LONG })
   return data
 }
 
@@ -90,7 +91,7 @@ export async function getSectorScoresByMonth(month: string) {
     orderBy: { sector: "asc" },
   })
 
-  if (data.length) await redis.set(cacheKey, data, { ex: 86400 })
+  if (data.length) await redis.set(cacheKey, data, { ex: CACHE_TTL_LONG })
   return data as ISectorScore[]
 }
 
@@ -115,7 +116,7 @@ export async function getSectorScoresByIndexIds(indexIds: string[]): Promise<ISe
     .filter(item => isSector(item.sector))
     .map(item => ({ ...item, sector: item.sector as Sector }))
 
-  await redis.set(cacheKey, data, { ex: 3600 })
+  await redis.set(cacheKey, data, { ex: CACHE_TTL_SHORT })
   return data
 }
 
@@ -137,7 +138,7 @@ export async function getIndexesByMonths(monthA: string, monthB: string) {
     include: { sectorScores: true },
   });
 
-  if (data.length) await redis.set(cacheKey, data, { ex: 3600 });
+  if (data.length) await redis.set(cacheKey, data, { ex: CACHE_TTL_SHORT });
   return data as IMonthlyIndex[];
 }
 
@@ -151,7 +152,7 @@ export async function getIndexByMonth(month: string) {
     include: { sectorScores: true },
   })
 
-  if (data) await redis.set(cacheKey, data, { ex: 86400 }) // 24h
+  if (data) await redis.set(cacheKey, data, { ex: CACHE_TTL_LONG })
   return data
 }
 
@@ -164,6 +165,6 @@ export async function getInsightCardsAI(month: string): Promise<IInsightCard[]> 
     where: { index: { month } },
   })
 
-  if (data.length) await redis.set(cacheKey, data, { ex: 86400 })
+  if (data.length) await redis.set(cacheKey, data, { ex: CACHE_TTL_LONG })
   return data as IInsightCard[]
 }

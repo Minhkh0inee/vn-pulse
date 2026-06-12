@@ -11,8 +11,9 @@ import {
 import Link from 'next/link'
 import { IMonthlyIndex } from '@/app/types/monthlyIndex'
 import { formatMonthLabel } from '@/utils/formatMonthLabel'
+import { REVALIDATE_DEFAULT } from '@/lib/constant/config'
 
-export const revalidate = 3600
+export const revalidate = REVALIDATE_DEFAULT
 
 interface ComparePageProps {
   searchParams: Promise<{ a?: string; b?: string }>

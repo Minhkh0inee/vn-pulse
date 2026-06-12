@@ -4,6 +4,7 @@ import { prisma }        from "@/lib/prisma"
 import { redis }         from "@/lib/redis"
 import { hashIP } from "@/utils/month.utils"
 import { PollResult } from "@/app/types/poll"
+import { CACHE_TTL_POLL, POLL_RATING_MIN, POLL_RATING_MAX } from "@/lib/constant/config"
 
 export async function GET(
   req: Request,
@@ -50,7 +51,10 @@ export async function GET(
       ? poll.responses.reduce((sum, r) => sum + r.rating, 0) / totalVotes
       : 0
 
-    const distribution = [1, 2, 3, 4, 5].map(rating => {
+    const distribution = Array.from(
+      { length: POLL_RATING_MAX - POLL_RATING_MIN + 1 },
+      (_, i) => i + POLL_RATING_MIN
+    ).map(rating => {
       const count = poll.responses.filter(r => r.rating === rating).length
       return {
         rating,
@@ -71,7 +75,7 @@ export async function GET(
     }
 
     // 4. Cache 5 phút (poll thay đổi thường xuyên)
-    await redis.set(cacheKey, result, { ex: 300 })
+    await redis.set(cacheKey, result, { ex: CACHE_TTL_POLL })
 
     return NextResponse.json(
       { success: true, data: result, hasVoted: !!hasVoted, source: "db" },

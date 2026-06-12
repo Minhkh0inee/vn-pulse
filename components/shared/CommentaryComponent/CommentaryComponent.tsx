@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Clock } from 'lucide-react'
 import CommentarySkeleton from './CommentarySkeleton'
 import { formatDate, splitWords } from '@/utils/commentaryComponent.utils'
+import { WORD_LIMIT } from '@/lib/constant/config'
 
 interface CommentaryComponentProps {
   month:       string        // e.g. "March 2026"
@@ -12,7 +13,6 @@ interface CommentaryComponentProps {
   publishedAt: Date | string | null
   isLoading?:  boolean
 }
-const WORD_LIMIT = 60  
 
 const CommentaryComponent: React.FC<CommentaryComponentProps> = ({
   month,

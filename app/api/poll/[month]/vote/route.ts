@@ -5,9 +5,10 @@ import { hashIP, secondsUntilEndOfMonth }        from "@/utils/month.utils"
 import { z }                                     from "zod"
 import { getPostHogClient }                      from "@/lib/posthog-server"
 import { pollVoteRateLimit } from "@/lib/rate-limiter"
+import { POLL_RATING_MIN, POLL_RATING_MAX } from "@/lib/constant/config"
 
 const VoteSchema = z.object({
-  rating: z.number().int().min(1).max(5),
+  rating: z.number().int().min(POLL_RATING_MIN).max(POLL_RATING_MAX),
 })
 
 export async function POST(

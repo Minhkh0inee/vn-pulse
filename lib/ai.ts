@@ -3,12 +3,18 @@ import {  generateText, Output, streamText } from "ai";
 import { z } from "zod";
 import { IMonthlyIndex } from "@/app/types/monthlyIndex";
 import { ICommentaryInput } from "@/types/commentary";
+import {
+  INSIGHT_COUNT,
+  INSIGHT_WORD_LIMIT,
+  SECTOR_SUMMARY_WORD_LIMIT,
+  COMMENTARY_MAX_TOKENS,
+} from "@/lib/constant/config";
 
 export const geminiFlash = google("gemini-2.5-flash");
 
 const insightElement = z.object({
   icon: z.string().describe("Single emoji related to the insight"),
-  text: z.string().describe("Vietnamese, concise, under 20 words"),
+  text: z.string().describe(`Vietnamese, concise, under ${INSIGHT_WORD_LIMIT} words`),
   type: z.enum(["positive", "warning", "neutral"]),
 });
 
@@ -26,7 +32,7 @@ export async function generateInsightCards(
       output: Output.object((
         {
         schema: z.object({
-        insights: z.array(insightElement).length(3),
+        insights: z.array(insightElement).length(INSIGHT_COUNT),
       })
         }
       )),
@@ -43,8 +49,8 @@ export async function generateInsightCards(
 
       Requirements:
       - Language: Vietnamese
-      - Length: Each insight must be under 20 words
-      - Format: Return exactly 3 items
+      - Length: Each insight must be under ${INSIGHT_WORD_LIMIT} words
+      - Format: Return exactly ${INSIGHT_COUNT} items
       - Icons: Use relevant emojis`
     });
 
@@ -153,8 +159,8 @@ export async function generateSectorSummary(input: SectorSummaryInput): Promise<
     model: geminiFlash,
     output: Output.object({
       schema: z.object({
-        summaryVi: z.string().describe("1-2 câu tiếng Việt, dưới 40 từ, mô tả hiệu suất ngành"),
-        summaryEn: z.string().describe("1-2 sentences in English, under 40 words, describing sector performance"),
+        summaryVi: z.string().describe(`1-2 câu tiếng Việt, dưới ${SECTOR_SUMMARY_WORD_LIMIT} từ, mô tả hiệu suất ngành`),
+        summaryEn: z.string().describe(`1-2 sentences in English, under ${SECTOR_SUMMARY_WORD_LIMIT} words, describing sector performance`),
       }),
     }),
     prompt: `You are an analyst for VN Startup Pulse, a Vietnamese startup ecosystem tracker.
@@ -165,7 +171,7 @@ Sector score: ${score}/100 (${trendText} so với tháng trước)
 Overall index: ${totalScore}/100
 
 Write a brief AI summary for this sector in BOTH Vietnamese (summaryVi) and English (summaryEn).
-Each summary must be 1-2 sentences, under 40 words, professional tone.
+Each summary must be 1-2 sentences, under ${SECTOR_SUMMARY_WORD_LIMIT} words, professional tone.
 No markdown. Plain text only.`,
   })
 
@@ -175,7 +181,7 @@ No markdown. Plain text only.`,
 export function commentaryGenerate(input:ICommentaryInput) {
       const result = streamText({
         model: geminiFlash,
-        maxOutputTokens: 800,
+        maxOutputTokens: COMMENTARY_MAX_TOKENS,
         prompt: commentaryGeneratePropmt(input),
       });
 

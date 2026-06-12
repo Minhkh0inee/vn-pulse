@@ -20,8 +20,9 @@ import { SectorIndex } from '@/components/shared/SectorIndex'
 import { ISectorScore } from '@/app/types/sectorScore'
 import { formatMonthLabel } from '@/utils/formatMonthLabel'
 import { formatMonthVi } from '@/utils/formatMonthVi'
+import { REVALIDATE_ARCHIVE } from '@/lib/constant/config'
 
-export const revalidate = 86400
+export const revalidate = REVALIDATE_ARCHIVE
 
 export default async function ArchiveDetailPage({
   params,

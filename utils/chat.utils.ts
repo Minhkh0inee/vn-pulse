@@ -1,6 +1,6 @@
+import { MAX_MESSAGES } from "@/lib/constant/config"
 import { useChat } from "@ai-sdk/react"
 
-const MAX_MESSAGES = 20
 const STORAGE_KEY  = "vn-pulse-chat"
 
 type ChatMessages = ReturnType<typeof useChat>["messages"]
