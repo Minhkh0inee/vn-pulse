@@ -16,9 +16,8 @@ import type { InsightCategory } from "@/components/shared/InsightCard"
 import { buildComponentBreakdown } from '@/utils/buildComponentBreakdown.utils'
 import { buildFundingStatus } from '@/utils/buildFundingStatus.util'
 import { buildJobPostingStatus } from '@/utils/buildJobPostingStatus.util'
-import { REVALIDATE_DEFAULT } from '@/lib/constant/config'
 
-export const revalidate = REVALIDATE_DEFAULT
+export const revalidate = 3600
 
 
 export default async function HomePage() {

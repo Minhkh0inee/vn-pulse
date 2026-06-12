@@ -1,8 +1,34 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
+// PostHog is proxied through /ingest/* rewrites below, so browsers only connect
+// to 'self'. The posthog.com entries are fallback for any direct SDK requests.
+// Sentry needs *.sentry.io for error ingest and blob: for session-replay workers.
+// Vercel needs vercel.live for preview toolbar and vitals.vercel-insights.com for analytics.
+const ContentSecurityPolicy = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com",
+  "style-src 'self' 'unsafe-inline' https://vercel.live",
+  "connect-src 'self' https://*.sentry.io https://us.i.posthog.com https://eu.i.posthog.com https://us-assets.i.posthog.com https://vitals.vercel-insights.com https://vercel.live",
+  "img-src 'self' data: blob: https://vercel.live https://vercel.com",
+  "font-src 'self' data: https://vercel.live",
+  "frame-src https://vercel.live",
+  "worker-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+].join("; ");
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "Content-Security-Policy", value: ContentSecurityPolicy },
+        ],
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

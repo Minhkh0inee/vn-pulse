@@ -7,10 +7,6 @@ export const CACHE_TTL_SHORT = 3600   // 1 h — mutable index data
 export const CACHE_TTL_LONG  = 86400  // 24 h — archived/immutable data
 export const CACHE_TTL_POLL  = 300    // 5 min — poll results (changes frequently)
 
-// ISR revalidation (seconds)
-export const REVALIDATE_DEFAULT = 3600
-export const REVALIDATE_ARCHIVE = 86400
-
 // Data fetch limits
 export const LAST_N_MONTHS = 6
 

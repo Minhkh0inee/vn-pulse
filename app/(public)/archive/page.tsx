@@ -10,9 +10,8 @@ import {
 import Link from 'next/link'
 import { CalendarX2 } from 'lucide-react'
 import YearFilter from '@/components/shared/YearFilter'
-import { REVALIDATE_DEFAULT } from '@/lib/constant/config'
 
-export const revalidate = REVALIDATE_DEFAULT
+export const revalidate = 3600
 
 export default async function ArchivePage() {
   const allIndexes = await getAllIndexes()
