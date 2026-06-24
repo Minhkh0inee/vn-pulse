@@ -8,6 +8,7 @@ import type { FormState, SectorRow } from "@/components/admin/types";
 import { sendNewsletter } from "@/app/actions/newsletter";
 import type { IMonthlyIndex } from "@/app/types/monthlyIndex";
 import { getPostHogClient } from "@/lib/posthog-server";
+import { generateInsightCards } from "@/lib/ai";
 
 export async function getExistingMonths(): Promise<string[]> {
   const records = await prisma.monthlyIndex.findMany({
@@ -126,7 +127,34 @@ export async function publishIndex(
     });
    
     if (publishedIndex) {
-      await sendNewsletter(publishedIndex as IMonthlyIndex);
+      try {
+        await sendNewsletter(publishedIndex as IMonthlyIndex);
+      } catch (err) {
+        console.error("[publishIndex] sendNewsletter failed:", err);
+      }
+
+      try {
+        const previousIndex = await prisma.monthlyIndex.findFirst({
+          where: { isPublished: true, month: { lt: form.month.trim() } },
+          orderBy: { month: "desc" },
+        });
+
+        const insights = await generateInsightCards(
+          publishedIndex as IMonthlyIndex,
+          previousIndex as IMonthlyIndex | null,
+        );
+
+        await prisma.insightCard.createMany({
+          data: insights.map((card) => ({
+            indexId: publishedIndex.id,
+            icon: card.icon,
+            text: card.text,
+            type: card.type,
+          })),
+        });
+      } catch (err) {
+        console.error("[publishIndex] generateInsightCards failed:", err);
+      }
     }
 
     const posthog = getPostHogClient();
